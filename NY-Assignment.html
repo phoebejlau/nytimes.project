@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="ny.png" />
+    <title>NY Times API Project</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+
+</head>
+
+<body>
+    <div class="container">
+        <h1>NY Times API Project</h1>
+        <img src="https://s-media-cache-ak0.pinimg.com/originals/0f/fc/1e/0ffc1eb7a62d64a9e09fa7765fc2850f.jpg">
+         <form>
+          <div class="form-group">
+            <label for="search">Enter A Search</label>
+            <input type="text" class="form-control" id="search" placeholder="Los Angeles">
+          </div>
+          
+          <button onclick="searchnyt()" class="btn btn-primary">Submit</button>
+        </form>
+
+        <div id="headlines">
+            <!-- List article titles HERE!!!! -->
+            
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
+    <script>
+        function searchnyt() {
+            event.preventDefault();
+            var userInput = document.getElementById("search").value;
+            console.log(userInput);
+        nytUrl = `https://api.nytimes.com/svc/search/v2/articlesearch.json?q=${userInput}&sort=newest&api-key=3001cc6f3d5d4927a449c60eb1fbb3c5`
+        $.getJSON(nytUrl, function (data) {
+            console.log(data)
+            //CODE GOES HERE
+            var inner = "";
+            for (var i = 0; i < data.response.docs.length; i++) {
+                var date =dateParse(data.response.docs[i].pub_date)
+                // inner+= `<li><a href="${data.response.docs[i].web_url}">${data.response.docs[i].headline.main}</a> ${date}</li>`;
+                if(data.response.docs[i].multimedia.length > 0){
+                    picture = `<img class="d-flex mr-3" src="http://www.nytimes.com/${data.response.docs[i].multimedia[1].url}">`
+                } else{
+                    picture ="";
+                }
+
+                inner+= `<div class="media">
+                           ${picture}
+              <div class="media-body">
+     
+                <a href="${data.response.docs[i].web_url}"><h5 class="mt-0">${data.response.docs[i].headline.main} &nbsp ${date}</h5></a>
+                ${data.response.docs[i].snippet}
+              </div>
+            </div>
+            <br>`
+            }
+            console.log(inner);
+             document.getElementById("headlines").innerHTML = inner;
+        })
+    }
+            function dateParse(date) {
+                return date.split("T")[0];
+            }
+
+    </script>
+</body>
